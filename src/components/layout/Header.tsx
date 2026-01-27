@@ -15,7 +15,6 @@ export default function Header() {
   const { totalItems } = useCart()
 
   useEffect(() => {
-    // Obtener usuario actual
     const getUser = async () => {
       const { data: { user } } = await supabase.auth.getUser()
       setUser(user)
@@ -24,7 +23,6 @@ export default function Header() {
 
     getUser()
 
-    // Escuchar cambios de autenticación
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null)
     })
@@ -74,9 +72,16 @@ export default function Header() {
           {loading ? (
             <div className="w-24 h-10 bg-gray-100 rounded-lg animate-pulse"></div>
           ) : user ? (
-            /* Usuario logueado */
             <div className="flex items-center gap-3">
-              <Link 
+              {user.email === 'segovia.katherine@gmail.com' && (
+                <Link
+                  href="/admin"
+                  className="px-3 py-2 bg-indigo-100 text-indigo-700 rounded-lg hover:bg-indigo-200 transition-colors text-sm font-medium"
+                >
+                  Admin
+                </Link>
+              )}
+              <Link
                 href="/perfil"
                 className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
               >
@@ -94,16 +99,15 @@ export default function Header() {
               </button>
             </div>
           ) : (
-            /* Usuario no logueado */
             <>
-              <Link 
-                href="/login" 
+              <Link
+                href="/login"
                 className="px-4 py-2 border-2 border-gray-200 rounded-lg font-medium hover:border-indigo-500 hover:text-indigo-500 transition-colors"
               >
                 Iniciar Sesión
               </Link>
-              <Link 
-                href="/registro" 
+              <Link
+                href="/registro"
                 className="px-4 py-2 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white rounded-lg font-medium hover:shadow-lg hover:shadow-indigo-500/30 transition-all"
               >
                 Registrarse
@@ -129,12 +133,21 @@ export default function Header() {
             />
             <Search className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
           </div>
-          
+
           {loading ? (
             <div className="h-12 bg-gray-100 rounded-lg animate-pulse"></div>
           ) : user ? (
             <div className="flex flex-col gap-2">
-              <Link 
+              {user.email === 'segovia.katherine@gmail.com' && (
+                <Link
+                  href="/admin"
+                  className="w-full py-3 bg-indigo-100 text-indigo-700 rounded-lg font-medium text-center"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Panel Admin
+                </Link>
+              )}
+              <Link
                 href="/perfil"
                 className="w-full py-3 bg-gray-100 rounded-lg font-medium text-center flex items-center justify-center gap-2"
                 onClick={() => setIsMenuOpen(false)}
@@ -155,15 +168,15 @@ export default function Header() {
             </div>
           ) : (
             <div className="flex flex-col gap-2">
-              <Link 
-                href="/login" 
+              <Link
+                href="/login"
                 className="w-full py-3 border-2 border-gray-200 rounded-lg font-medium text-center"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Iniciar Sesión
               </Link>
-              <Link 
-                href="/registro" 
+              <Link
+                href="/registro"
                 className="w-full py-3 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-lg font-medium text-center"
                 onClick={() => setIsMenuOpen(false)}
               >
