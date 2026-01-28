@@ -84,25 +84,26 @@ export default async function ProductosPage() {
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
                 {products.map((product: any) => (
-                  <ProductCard
-                    key={product.id}
-                    product={{
-                      id: product.id,
-                      title: product.title,
-                      price: `${product.currency} ${product.price.toLocaleString()}`,
-                      location: product.location,
-                      category: product.category_id,
-                      badge: product.badge === 'featured' ? 'Destacado' : 
-                             product.badge === 'new' ? 'Nuevo' : 
-                             product.badge === 'sale' ? `-${product.discount || 20}%` : null,
-                      color: product.category_id === 'propiedades' ? 'from-violet-400 to-indigo-400' :
-                             product.category_id === 'vehiculos' ? 'from-orange-400 to-yellow-400' :
-                             product.category_id === 'electronica' ? 'from-cyan-400 to-blue-400' :
-                             product.category_id === 'hogar' ? 'from-emerald-400 to-green-400' :
-                             product.category_id === 'moda' ? 'from-pink-400 to-rose-400' :
-                             'from-gray-400 to-slate-400'
-                    }}
-                  />
+         <ProductCard
+  key={product.id}
+  product={{
+    id: product.id,
+    title: product.title,
+    price: `${product.currency} ${product.price.toLocaleString()}`,
+    location: product.location,
+    category: product.category_id,
+    badge: product.badge === 'featured' ? 'Destacado' : 
+           product.badge === 'new' ? 'Nuevo' : 
+           product.badge === 'sale' ? `-${product.discount || 20}%` : null,
+    color: product.category_id === 'propiedades' ? 'from-violet-400 to-indigo-400' :
+           product.category_id === 'vehiculos' ? 'from-orange-400 to-yellow-400' :
+           product.category_id === 'electronica' ? 'from-cyan-400 to-blue-400' :
+           product.category_id === 'hogar' ? 'from-emerald-400 to-green-400' :
+           product.category_id === 'moda' ? 'from-pink-400 to-rose-400' :
+           'from-gray-400 to-slate-400',
+    image: product.images?.[0] || null
+  }}
+/>
                 ))}
               </div>
             )}

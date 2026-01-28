@@ -13,6 +13,7 @@ export interface Product {
   category: string
   badge?: string | null
   color: string
+  image?: string | null
 }
 
 interface ProductCardProps {
@@ -60,7 +61,15 @@ export default function ProductCard({ product }: ProductCardProps) {
     <article className="bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
       <Link href={`/producto/${product.id}`}>
         <div className="relative aspect-[4/3] overflow-hidden">
-          <div className={`w-full h-full bg-gradient-to-br ${product.color}`} />
+          {product.image ? (
+            <img 
+              src={product.image} 
+              alt={product.title}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div className={`w-full h-full bg-gradient-to-br ${product.color}`} />
+          )}
           
           {product.badge && (
             <span className={`absolute top-3 left-3 px-3 py-1 rounded-full text-xs font-semibold text-white ${getBadgeColor(product.badge)}`}>

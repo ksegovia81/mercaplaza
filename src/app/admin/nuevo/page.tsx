@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, Loader2, Save } from 'lucide-react'
+import { ArrowLeft, Loader2, Save, Upload, X } from 'lucide-react'
 
 const categories = [
   { id: 'propiedades', name: 'Propiedades' },
@@ -26,7 +26,9 @@ const currencies = ['USD', 'PYG', 'BRL', 'ARS']
 export default function NuevoProductoPage() {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
+  const [uploading, setUploading] = useState(false)
   const [error, setError] = useState('')
+  const [images, setImages] = useState<string[]>([])
   
   const [form, setForm] = useState({
     title: '',
@@ -51,6 +53,41 @@ export default function NuevoProductoPage() {
     }
   }
 
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files
+    if (!files || files.length === 0) return
+
+    setUploading(true)
+    const newImages: string[] = []
+
+    for (const file of Array.from(files)) {
+      const fileExt = file.name.split('.').pop()
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`
+
+      const { error: uploadError } = await supabase.storage
+        .from('products')
+        .upload(fileName, file)
+
+      if (uploadError) {
+        console.error('Error uploading:', uploadError)
+        continue
+      }
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('products')
+        .getPublicUrl(fileName)
+
+      newImages.push(publicUrl)
+    }
+
+    setImages([...images, ...newImages])
+    setUploading(false)
+  }
+
+  const removeImage = (index: number) => {
+    setImages(images.filter((_, i) => i !== index))
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
@@ -70,6 +107,7 @@ export default function NuevoProductoPage() {
         country: form.country,
         badge: form.badge || null,
         featured: form.featured,
+        images: images,
         user_id: user?.id,
       })
 
@@ -106,6 +144,52 @@ export default function NuevoProductoPage() {
           )}
 
           <div className="space-y-6">
+            {/* Imágenes */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Imágenes del producto
+              </label>
+              
+              <div className="flex flex-wrap gap-4 mb-4">
+                {images.map((url, index) => (
+                  <div key={index} className="relative w-24 h-24">
+                    <img
+                      src={url}
+                      alt={`Imagen ${index + 1}`}
+                      className="w-full h-full object-cover rounded-lg"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeImage(index)}
+                      className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600"
+                    >
+                      <X size={14} />
+                    </button>
+                  </div>
+                ))}
+                
+                <label className="w-24 h-24 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-indigo-500 hover:bg-indigo-50 transition-colors">
+                  {uploading ? (
+                    <Loader2 size={24} className="text-indigo-500 animate-spin" />
+                  ) : (
+                    <>
+                      <Upload size={24} className="text-gray-400" />
+                      <span className="text-xs text-gray-500 mt-1">Subir</span>
+                    </>
+                  )}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={handleImageUpload}
+                    className="hidden"
+                    disabled={uploading}
+                  />
+                </label>
+              </div>
+              <p className="text-xs text-gray-500">PNG, JPG hasta 5MB. Puedes subir varias imágenes.</p>
+            </div>
+
             {/* Título */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
